@@ -22,7 +22,6 @@ public class InventoryRepositoryRedis {
     public void soldRecordToRedis(List<Vehicle> vehicleList) {
         for (Vehicle vehicle : vehicleList) {
             String vehicleString = new StringBuilder().append(vehicle.getLocation()).append('|').append(vehicle.getDateOfSale()).toString();
-            // logger.info("Persisting VIN = {} to redis", vehicle.getVIN());
             jedis.set(vehicle.getVIN(), vehicleString);
         }
     }
@@ -31,7 +30,6 @@ public class InventoryRepositoryRedis {
         Pipeline pipeline = jedis.pipelined();
         for (Vehicle vehicle : vehicleList) {
             String vehicleString = new StringBuilder().append(vehicle.getLocation()).append('|').append(vehicle.getDateOfSale()).toString();
-            // logger.info("Persisting VIN = {} to redis", vehicle.getVIN());
             pipeline.set(vehicle.getVIN(), vehicleString);
         }
         pipeline.sync();

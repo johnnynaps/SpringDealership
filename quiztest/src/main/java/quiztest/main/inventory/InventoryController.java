@@ -25,12 +25,12 @@ public class InventoryController {
         return inventoryService.getAvailableInventory();
     }
 
-    @GetMapping("/{color}")
+    @GetMapping(path = "color/{color}")
     public List<Vehicle> getVehicleByColor(@PathVariable String color) {
         return inventoryService.getInventoryByColor(color);
     }
 
-    @GetMapping("/{model}")
+    @GetMapping(path = "model/{model}")
     public List<Vehicle> getVehicleByModel(@PathVariable String model) {
         return inventoryService.getInventoryByColor(model);
     }

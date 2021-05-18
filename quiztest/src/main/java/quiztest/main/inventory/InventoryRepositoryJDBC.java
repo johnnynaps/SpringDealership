@@ -29,38 +29,38 @@ public class InventoryRepositoryJDBC {
     }
 
     public int deleteByVIN(String VIN) {
-        String sql = "delete from inventory where \"VIN\" = ?;";
+        String sql = "delete from inventory WHERE \"VIN\" = ?;";
         Object[] args = new Object[] { VIN };
         return jdbcTemplate.update(sql, args);
     }
 
     public List<Vehicle> findAll() {
-        String sql = "select * from inventory;";
+        String sql = "SELECT * from inventory;";
         List<Vehicle> vehicleList = jdbcTemplate.query(sql, new VehicleMapper());
         return vehicleList;
     }
 
     public List<Vehicle> findAllAvailable() {
-        String sql = "select * from inventory where available;";
+        String sql = "SELECT * from inventory WHERE available;";
         List<Vehicle> vehicleList = jdbcTemplate.query(sql, new VehicleMapper());
         return vehicleList;
     }
 
     public List<Vehicle> findByColor(String color) {
-        String sql = "select * from inventory where color = ? and available;";
+        String sql = "SELECT * from inventory WHERE color = ? and available;";
         List<Vehicle> vehicleList = jdbcTemplate.query(sql, new VehicleMapper(), color);
         return vehicleList;
     }
 
     public List<Vehicle> findByModel(String model) {
-        String sql = "select * from inventory where model = ? and available;";
+        String sql = "SELECT * from inventory WHERE model = ? and available;";
         List<Vehicle> vehicleList = jdbcTemplate.query(sql, new VehicleMapper(), model);
         return vehicleList;
     }
 
     public Vehicle findByVIN(String VIN) {
         Vehicle vehicle = new Vehicle();
-        String sql = "select * from inventory where \"VIN\" = ?;";
+        String sql = "SELECT * from inventory WHERE \"VIN\" = ?;";
         List<Vehicle> vehicleList = jdbcTemplate.query(sql, new VehicleMapper(), VIN);
         try {
             if (vehicleList.size() > 0) {
@@ -105,11 +105,10 @@ public class InventoryRepositoryJDBC {
         jdbcTemplate.update(sql);
     }
 
-    // public Dealership getDealershipById(int location) {
-    // String sql = "SELECT * FROM dealership WHERE id = {};";
-    // List<Dealership> dealershipList = jdbcTemplate.query(sql, new DealershipMapper(), location);
-    // logger.error("{}", dealershipList);
-    // Dealership dealership = dealershipList.get(0);
-    // return dealership;
-    // }
+    public Dealership getDealershipById(int location) {
+        String sql = "SELECT * FROM dealership WHERE id = ?;";
+        List<Dealership> dealershipList = jdbcTemplate.query(sql, new DealershipMapper(), location);
+        Dealership dealership = dealershipList.get(0);
+        return dealership;
+    }
 }

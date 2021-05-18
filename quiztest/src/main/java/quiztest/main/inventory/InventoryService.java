@@ -31,34 +31,34 @@ public class InventoryService implements InitializingBean {
     }
 
     public List<Vehicle> getInventory() {
-        logger.info("returning inventory regardless of availability");
+        logger.info("Returning inventory regardless of availability");
         return inventoryRepositoryJDBC.findAll();
     }
 
     public List<Vehicle> getInventoryByColor(String color) {
-        logger.info("returning all available vehicles by color");
+        logger.info("Returning all available vehicles by color");
         return inventoryRepositoryJDBC.findByColor(color);
     }
 
     public List<Vehicle> getInventoryByModel(String model) {
-        logger.info("returning all available vehicles by model");
+        logger.info("Returning all available vehicles by model");
         return inventoryRepositoryJDBC.findByModel(model);
     }
 
     public List<Vehicle> getAvailableInventory() {
-        logger.info("returning all available vehicles");
+        logger.info("Returning all available vehicles");
         return inventoryRepositoryJDBC.findAllAvailable();
     }
 
     public void addNewVehicle(Vehicle vehicle) {
-        logger.info("adding new vehicle {}", vehicle);
+        logger.info("Adding new vehicle {}", vehicle);
         if (!exists(vehicle)) {
             inventoryRepositoryJDBC.save(vehicle);
         }
     }
 
     public void purchaseVehicle(String VIN) {
-        logger.info("purchasing vehicle VIN = {} If purchasable, sets availability to false", VIN);
+        logger.info("Purchasing vehicle VIN = {} If purchasable, sets availability to false", VIN);
         Vehicle vehicle = findByVIN(VIN);
 
         if (vehicle != null) {
@@ -77,7 +77,8 @@ public class InventoryService implements InitializingBean {
             String vehicleString = inventoryRepositoryRedis.getRecord(VIN);
             if (vehicleString != null) {
                 String[] arr = vehicleString.split("\\|");
-                logger.info("Vehicle {} was sold from location {} at {}", VIN, arr[0], arr[1]);
+                String location = inventoryRepositoryJDBC.getDealershipById(Integer.parseInt(arr[0])).getName();
+                logger.info("Vehicle {} was sold from location {} at {}", VIN, location, arr[1]);
             }
             else {
                 logger.info("This vehicle does not exist");

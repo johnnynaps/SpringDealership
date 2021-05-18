@@ -10,6 +10,7 @@ public class VehicleMapper implements RowMapper<Vehicle> {
     @Override
     public Vehicle mapRow(ResultSet rs, int rowNum) throws SQLException {
         Vehicle vehicle = new Vehicle();
+
         vehicle.setMake(rs.getString("make"));
         vehicle.setModel(rs.getString("model"));
         vehicle.setColor(rs.getString("color"));
@@ -17,6 +18,7 @@ public class VehicleMapper implements RowMapper<Vehicle> {
         vehicle.setAvailable(rs.getBoolean("available"));
         vehicle.setLocation(rs.getInt("location"));
         vehicle.setDateOfSale(rs.getTimestamp("dateofsale"));
+
         return vehicle;
     }
 
