@@ -25,6 +25,16 @@ public class InventoryController {
         return inventoryService.getAvailableInventory();
     }
 
+    @GetMapping("/{color}")
+    public List<Vehicle> getVehicleByColor(@PathVariable String color) {
+        return inventoryService.getInventoryByColor(color);
+    }
+
+    @GetMapping("/{model}")
+    public List<Vehicle> getVehicleByModel(@PathVariable String model) {
+        return inventoryService.getInventoryByColor(model);
+    }
+
     @PutMapping("/purchase/{VIN}")
     public void purchaseVehicle(@PathVariable String VIN) {
         inventoryService.purchaseVehicle(VIN);

@@ -20,6 +20,4 @@ public class VehicleMapper implements RowMapper<Vehicle> {
         return vehicle;
     }
 
-    // FIX THIS
-
 }
