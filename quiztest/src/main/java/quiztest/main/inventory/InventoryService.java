@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -12,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,9 +20,9 @@ public class InventoryService implements InitializingBean {
 
     private final InventoryRepositoryRedis inventoryRepositoryRedis;
     private final InventoryRepositoryJDBC inventoryRepositoryJDBC;
-    Logger logger = LoggerFactory.getLogger(InventoryService.class);
-    List<String> colorList = Arrays.asList("Blue", "Black", "Red", "Silver");
-    List<Pair<String, List<String>>> makeModelList = new ArrayList<>();
+    private Logger logger = LoggerFactory.getLogger(InventoryService.class);
+    private List<String> colorList = Arrays.asList("Blue", "Black", "Red", "Silver");
+    private List<Pair<String, List<String>>> makeModelList = new ArrayList<>();
 
     @Autowired
     public InventoryService(InventoryRepositoryJDBC inventoryRepositoryJDBC, InventoryRepositoryRedis inventoryRepositoryRedis) {
@@ -55,6 +55,9 @@ public class InventoryService implements InitializingBean {
         if (!exists(vehicle)) {
             inventoryRepositoryJDBC.save(vehicle);
         }
+        else {
+            logger.warn("Duplicate vehicle insertion attempted");
+        }
     }
 
     public void purchaseVehicle(String VIN) {
@@ -70,7 +73,7 @@ public class InventoryService implements InitializingBean {
                 vehicle.setDateOfSale(curr);
             }
             else {
-                logger.info("This vehicle is sold");
+                logger.warn("This vehicle has already been sold");
             }
         }
         else {
@@ -84,32 +87,6 @@ public class InventoryService implements InitializingBean {
                 logger.info("This vehicle does not exist");
             }
         }
-    }
-
-    @Scheduled(fixedRate = 10000)
-    public void addRandomVehicle() {
-        Vehicle vehicle = createRandomVehicle();
-        if (!exists(vehicle)) {
-            logger.info("Scheduled Task. Inserting {}", vehicle.toString());
-            inventoryRepositoryJDBC.save(vehicle);
-        }
-    }
-
-    @Scheduled(fixedRate = 10000)
-    public void addRandomSoldVehicle() {
-        Vehicle vehicle = createRandomSoldVehicle();
-        if (!exists(vehicle)) {
-            logger.info("Scheduled Task. Inserting {} sold : {}", vehicle.toString(), vehicle.getDateOfSale());
-            inventoryRepositoryJDBC.saveSoldVehicle(vehicle);
-        }
-    }
-
-    @Scheduled(fixedRate = 25000)
-    public void purchaseRandomVehicle() {
-        Vehicle vehicle = inventoryRepositoryJDBC.getRandomAvailableVehicle();
-        Timestamp curr = new Timestamp(System.currentTimeMillis());
-        logger.info("Scheduled Task. Purchasing random vehicle {} at {}", vehicle.toString(), curr);
-        inventoryRepositoryJDBC.purchaseRandomVehicle(vehicle.getVIN(), curr);
     }
 
     public Vehicle findByVIN(String VIN) {
@@ -137,16 +114,15 @@ public class InventoryService implements InitializingBean {
         logger.info("Creating a random sold vehicle.");
         Random random = new Random();
         Vehicle vehicle = new Vehicle();
+        Long lastishMonth = System.currentTimeMillis() - 2592000000L;
+        Long threeishMonthsAgo = System.currentTimeMillis() - 7776000000L;
 
-        long offset = Timestamp.valueOf("2021-01-01 00:00:00").getTime();
-        long end = Timestamp.valueOf("2021-05-01 00:00:00").getTime();
-        long diff = end - offset + 1;
-        Timestamp ts = new Timestamp(offset + (long) (Math.random() * diff));
+        Timestamp ts = new Timestamp(ThreadLocalRandom.current().nextLong(threeishMonthsAgo, lastishMonth));
 
-        Pair<String, List<String>> beep = makeModelList.get(random.nextInt(makeModelList.size()));
+        Pair<String, List<String>> entry = makeModelList.get(random.nextInt(makeModelList.size()));
 
-        vehicle.setMake(beep.getLeft());
-        vehicle.setModel(beep.getRight().get(random.nextInt(beep.getRight().size())));
+        vehicle.setMake(entry.getLeft());
+        vehicle.setModel(entry.getRight().get(random.nextInt(entry.getRight().size())));
         vehicle.setAvailable(false);
         vehicle.setColor(colorList.get(random.nextInt(colorList.size())));
         vehicle.setVIN(RandomStringUtils.randomAlphanumeric(10).toUpperCase());
@@ -167,25 +143,13 @@ public class InventoryService implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-
         logger.info("Making model list");
 
         makeModelList.add(Pair.of("Ford", Arrays.asList("Mustang", "Taurus")));
-
         makeModelList.add(Pair.of("Tesla", Arrays.asList("Model 3", "Model S")));
-
         makeModelList.add(Pair.of("Honda", Arrays.asList("Accord", "Fit")));
-
         makeModelList.add(Pair.of("Nissan", Arrays.asList("350z", "Sentra")));
 
-    }
-
-    @Scheduled(cron = "0 0 * * * *")
-    public void moveToRedis() {
-        logger.info(
-            "Scheduled Task. Checking inventory DB daily, at midnight, for any vehicles sold prior to 60 days, moving vehicle information to redis, and removing vehicle from inventory");
-        inventoryRepositoryRedis.soldRecordToRedisPipeline(inventoryRepositoryJDBC.getdOlderThanSixty());
-        inventoryRepositoryJDBC.deleteOlderThanSixty();
     }
 
     // public void generateSales() {

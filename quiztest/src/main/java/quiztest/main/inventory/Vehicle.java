@@ -1,9 +1,8 @@
 package quiztest.main.inventory;
 
-import java.io.Serializable;
 import java.sql.Timestamp;
 
-public class Vehicle implements Serializable {
+public class Vehicle {
 
     private String make;
     private String model;

@@ -11,9 +11,12 @@ import redis.clients.jedis.Pipeline;
 
 @Repository
 public class InventoryRepositoryRedis {
-    Logger logger = LoggerFactory.getLogger(InventoryRepositoryRedis.class);
+    private Logger logger = LoggerFactory.getLogger(InventoryRepositoryRedis.class);
+    private static Jedis jedis;
 
-    Jedis jedis = new Jedis("localhost", 6379);
+    static {
+        jedis = new Jedis("localhost", 6379);
+    }
 
     public void pingRedis() {
         logger.error(jedis.ping());

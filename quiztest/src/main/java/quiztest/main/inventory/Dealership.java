@@ -56,7 +56,5 @@ public class Dealership {
         builder.append("Dealership [id=").append(id).append(", name=").append(name).append(", address=").append(address).append(", manager=").append(manager).append("]");
         return builder.toString();
     }
-    
-    //have to create a second datasource 
 
 }
