@@ -152,33 +152,4 @@ public class InventoryService implements InitializingBean {
 
     }
 
-    // public void generateSales() {
-    // logger.info("inserting a million records");
-    // for (int i = 0; i < 1000000; i++) {
-    // Vehicle vehicle = createRandomVehicle();
-    // if (!exists(vehicle)) {
-    // inventoryRepositoryJDBC.save(vehicle);
-    // }
-    // if (i % 10000 == 0) {
-    // logger.error("ANOTHER TEN THOUSAND INSERTED");
-    //
-    // }
-    // }
-    // }
-
-    // public void generateSoldVehicles() {
-    // logger.info("Inserting 1000000 sold vehicle test records");
-    // for (int i = 0; i < 1000000; i++) {
-    // Vehicle vehicle = createRandomSoldVehicle();
-    // if (!exists(vehicle)) {
-    // inventoryRepositoryJDBC.saveSoldVehicle(vehicle);
-    //
-    // }
-    // if (i % 10000 == 0) {
-    // logger.error("{} inserted so far", i);
-    //
-    // }
-    // }
-    // }
-
 }
