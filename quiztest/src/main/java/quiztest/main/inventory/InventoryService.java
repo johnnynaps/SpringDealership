@@ -23,6 +23,7 @@ public class InventoryService implements InitializingBean {
     private Logger logger = LoggerFactory.getLogger(InventoryService.class);
     private List<String> colorList = Arrays.asList("Blue", "Black", "Red", "Silver");
     private List<Pair<String, List<String>>> makeModelList = new ArrayList<>();
+    Random random = new Random();
 
     @Autowired
     public InventoryService(InventoryRepositoryJDBC inventoryRepositoryJDBC, InventoryRepositoryRedis inventoryRepositoryRedis) {
@@ -96,7 +97,6 @@ public class InventoryService implements InitializingBean {
 
     public Vehicle createRandomVehicle() {
         logger.info("Creating a random vehicle.");
-        Random random = new Random();
         Vehicle vehicle = new Vehicle();
 
         Pair<String, List<String>> beep = makeModelList.get(random.nextInt(makeModelList.size()));
@@ -112,7 +112,6 @@ public class InventoryService implements InitializingBean {
 
     public Vehicle createRandomSoldVehicle() {
         logger.info("Creating a random sold vehicle.");
-        Random random = new Random();
         Vehicle vehicle = new Vehicle();
         Long lastishMonth = System.currentTimeMillis() - 2592000000L;
         Long threeishMonthsAgo = System.currentTimeMillis() - 7776000000L;
