@@ -23,6 +23,7 @@ public class InventoryService implements InitializingBean {
     private Logger logger = LoggerFactory.getLogger(InventoryService.class);
     private List<String> colorList = Arrays.asList("Blue", "Black", "Red", "Silver");
     private List<Pair<String, List<String>>> makeModelList = new ArrayList<>();
+    Random random = new Random();
 
     @Autowired
     public InventoryService(InventoryRepositoryJDBC inventoryRepositoryJDBC, InventoryRepositoryRedis inventoryRepositoryRedis) {
@@ -96,7 +97,6 @@ public class InventoryService implements InitializingBean {
 
     public Vehicle createRandomVehicle() {
         logger.info("Creating a random vehicle.");
-        Random random = new Random();
         Vehicle vehicle = new Vehicle();
 
         Pair<String, List<String>> beep = makeModelList.get(random.nextInt(makeModelList.size()));
@@ -112,7 +112,6 @@ public class InventoryService implements InitializingBean {
 
     public Vehicle createRandomSoldVehicle() {
         logger.info("Creating a random sold vehicle.");
-        Random random = new Random();
         Vehicle vehicle = new Vehicle();
         Long lastishMonth = System.currentTimeMillis() - 2592000000L;
         Long threeishMonthsAgo = System.currentTimeMillis() - 7776000000L;
@@ -151,34 +150,5 @@ public class InventoryService implements InitializingBean {
         makeModelList.add(Pair.of("Nissan", Arrays.asList("350z", "Sentra")));
 
     }
-
-    // public void generateSales() {
-    // logger.info("inserting a million records");
-    // for (int i = 0; i < 1000000; i++) {
-    // Vehicle vehicle = createRandomVehicle();
-    // if (!exists(vehicle)) {
-    // inventoryRepositoryJDBC.save(vehicle);
-    // }
-    // if (i % 10000 == 0) {
-    // logger.error("ANOTHER TEN THOUSAND INSERTED");
-    //
-    // }
-    // }
-    // }
-
-    // public void generateSoldVehicles() {
-    // logger.info("Inserting 1000000 sold vehicle test records");
-    // for (int i = 0; i < 1000000; i++) {
-    // Vehicle vehicle = createRandomSoldVehicle();
-    // if (!exists(vehicle)) {
-    // inventoryRepositoryJDBC.saveSoldVehicle(vehicle);
-    //
-    // }
-    // if (i % 10000 == 0) {
-    // logger.error("{} inserted so far", i);
-    //
-    // }
-    // }
-    // }
 
 }
