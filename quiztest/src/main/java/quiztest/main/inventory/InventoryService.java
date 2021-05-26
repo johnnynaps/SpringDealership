@@ -1,10 +1,10 @@
 package quiztest.main.inventory;
 
+import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -23,7 +23,7 @@ public class InventoryService implements InitializingBean {
     private Logger logger = LoggerFactory.getLogger(InventoryService.class);
     private List<String> colorList = Arrays.asList("Blue", "Black", "Red", "Silver");
     private List<Pair<String, List<String>>> makeModelList = new ArrayList<>();
-    Random random = new Random();
+    private SecureRandom random = new SecureRandom();
 
     @Autowired
     public InventoryService(InventoryRepositoryJDBC inventoryRepositoryJDBC, InventoryRepositoryRedis inventoryRepositoryRedis) {
@@ -115,9 +115,7 @@ public class InventoryService implements InitializingBean {
         Vehicle vehicle = new Vehicle();
         Long lastishMonth = System.currentTimeMillis() - 2592000000L;
         Long threeishMonthsAgo = System.currentTimeMillis() - 7776000000L;
-
-        Timestamp ts = new Timestamp(ThreadLocalRandom.current().nextLong(threeishMonthsAgo, lastishMonth));
-
+        Timestamp randomTimestamp = new Timestamp(ThreadLocalRandom.current().nextLong(threeishMonthsAgo, lastishMonth));
         Pair<String, List<String>> entry = makeModelList.get(random.nextInt(makeModelList.size()));
 
         vehicle.setMake(entry.getLeft());
@@ -126,7 +124,7 @@ public class InventoryService implements InitializingBean {
         vehicle.setColor(colorList.get(random.nextInt(colorList.size())));
         vehicle.setVIN(RandomStringUtils.randomAlphanumeric(10).toUpperCase());
         vehicle.setLocation(Integer.parseInt(RandomStringUtils.randomNumeric(1)) + 1);
-        vehicle.setDateOfSale(ts);
+        vehicle.setDateOfSale(randomTimestamp);
         return vehicle;
     }
 
